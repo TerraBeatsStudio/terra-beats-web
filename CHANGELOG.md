@@ -1,3 +1,10 @@
+# Universo TERRA listo para redes — 2026-11-21
+
+- Las guías se escriben como archivos de texto en `contenido/universo/` y `tools/publicar_universo.py` genera la página con plantilla fija, el índice, `universo/feed.xml` (RSS) y `sitemap.xml`. Instrucciones en `contenido/universo/LEEME.md`.
+- Cada guía tiene ahora URL canónica, Open Graph, Twitter Card y datos estructurados BlogPosting. La portada enlaza el feed RSS.
+- Las 3 guías existentes pasan al nuevo formato sin cambios en su texto visible.
+- Limitación: mientras la web sea privada, redes y Metricool no pueden leer el feed ni las vistas previas.
+
 # TERRA BEATS — Interactive space
 
 Updated: 2026-11-16. Existing Site and owner-only audience retained.
