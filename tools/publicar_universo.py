@@ -155,6 +155,32 @@ def figura(linea):
     return f'<figure><img src="{esc(src)}" alt="{esc(alt)}" loading="lazy">{pie_html}</figure>'
 
 
+RE_YOUTUBE_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
+
+
+def bloque_youtube(video_id, dentro, archivo):
+    """Tarjeta de vídeo sin iframe: no carga nada de YouTube hasta que la persona hace clic.
+
+    :::youtube ID_DE_11_CARACTERES
+    ![alt](portada.jpg "Texto del botón")
+    :::
+    Con «PENDIENTE» en lugar del ID enlaza al canal (útil mientras el vídeo no está subido).
+    """
+    if len(dentro) != 1 or not RE_IMAGEN.match(dentro[0].strip()):
+        raise ErrorContenido(f"{archivo}: «:::youtube» lleva dentro una sola imagen ![alt](portada.jpg \"texto\").")
+    if video_id == "PENDIENTE":
+        url = next((p for p in CONFIG["perfiles"] if "youtube" in p), "https://www.youtube.com/")
+    elif RE_YOUTUBE_ID.match(video_id):
+        url = f"https://www.youtube.com/watch?v={video_id}"
+    else:
+        raise ErrorContenido(f"{archivo}: «{video_id}» no es un ID de YouTube (11 caracteres) ni PENDIENTE.")
+    m = RE_IMAGEN.match(dentro[0].strip())
+    alt, src, texto = m.group(1), m.group(2), m.group(3) or "Ver en YouTube"
+    return (f'<figure class="video"><a href="{esc(url)}" target="_blank" rel="noopener">'
+            f'<img src="{esc(src)}" alt="{esc(alt)}" loading="lazy"></a>'
+            f'<figcaption><a href="{esc(url)}" target="_blank" rel="noopener">▶ {en_linea(texto)}</a></figcaption></figure>')
+
+
 def markdown_a_html(texto, archivo):
     lineas = texto.strip("\n").split("\n")
     partes, i = [], 0
@@ -180,8 +206,10 @@ def markdown_a_html(texto, archivo):
                     raise ErrorContenido(f"{archivo}: dentro de «:::galeria» solo van imágenes ![alt](archivo \"pie\").")
                 figs = "".join(figura(l) for l in dentro)
                 partes.append(f'<div class="gallery" tabindex="0" aria-label="Galería desplazable de {len(dentro)} imágenes">{figs}</div>')
+            elif tipo == "youtube":
+                partes.append(bloque_youtube(titulo.strip(), dentro, archivo))
             else:
-                raise ErrorContenido(f"{archivo}: bloque desconocido «:::{tipo}» (usa consejo o galeria).")
+                raise ErrorContenido(f"{archivo}: bloque desconocido «:::{tipo}» (usa consejo, galeria o youtube).")
             i = fin + 1
             continue
         if quitada.startswith("### "):

@@ -59,6 +59,14 @@ Para comprobar sin escribir nada: `python3 tools/publicar_universo.py --comproba
   :::
   ```
 
+- Vídeo de YouTube (tarjeta con portada; no carga nada de YouTube hasta el clic, sin cookies):
+  ```
+  :::youtube ID_DEL_VIDEO
+  ![texto alternativo](portada.jpg "Texto del enlace")
+  :::
+  ```
+  Mientras el vídeo no esté subido, escribe `PENDIENTE` en lugar del ID: enlaza al canal.
+
 ## Qué genera
 
 - `dist/universo/<slug>.html` con Open Graph, Twitter Card, datos estructurados (BlogPosting y migas) y URL canónica.
