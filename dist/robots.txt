@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://terra-beats-studio.topart9.chatgpt.site/sitemap.xml
+Sitemap: https://terrabeatsstudio.com/sitemap.xml

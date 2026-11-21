@@ -1,0 +1,18 @@
+# Comprueba en cada PR que dist/ está regenerado a partir de contenido/universo/.
+name: Comprobar Universo
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 tools/publicar_universo.py --comprobar
