@@ -1,6 +1,6 @@
 # Publicar la web en GitHub Pages con terrabeatsstudio.com
 
-La web es estática (`dist/`), así que GitHub Pages la sirve gratis. Cada cambio que entra en `main`
+La web es estática (`dist/`), así que GitHub Pages la sirve gratis. Cada cambio que entra en `principal`
 dispara `.github/workflows/pages.yml`, que comprueba que Universo está regenerado y publica `dist/`.
 
 ## 1. Requisito de GitHub
