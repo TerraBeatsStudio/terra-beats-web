@@ -1,3 +1,9 @@
+# Publicación en GitHub Pages con terrabeatsstudio.com — 2026-11-21
+
+- Workflow `.github/workflows/pages.yml` publica `dist/` en GitHub Pages en cada cambio de `main`; `comprobar.yml` verifica Universo en cada PR.
+- `dist/CNAME` y todas las URL canónicas, Open Graph, RSS, sitemap y robots apuntan a `https://terrabeatsstudio.com`.
+- Pasos de dominio y DNS en `PUBLICAR-WEB.md`. No fusionar hasta tener el dominio comprado y Pages activado.
+
 # Universo TERRA listo para redes — 2026-11-21
 
 - Las guías se escriben como archivos de texto en `contenido/universo/` y `tools/publicar_universo.py` genera la página con plantilla fija, el índice, `universo/feed.xml` (RSS) y `sitemap.xml`. Instrucciones en `contenido/universo/LEEME.md`.
