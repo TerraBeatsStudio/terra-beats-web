@@ -305,6 +305,23 @@ def url_absoluta(ruta):
     return ruta if ruta.startswith("http") else f"{BASE}{ruta}"
 
 
+def gtm_head_snippet():
+    gtm = str(CONFIG.get("gtm_id", "")).strip()
+    if not gtm:
+        return ""
+    gtm_esc = esc(gtm)
+    return (
+        "<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}"
+        "(function(){var c=null;try{c=localStorage.getItem('terra_consent_v1');}catch(e){}"
+        "gtag('consent','default',{'analytics_storage':c==='granted'?'granted':'denied',"
+        "'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied'});})();</script>"
+        f"<script>(function(w,d,s,l,i){{w[l]=w[l]||[];w[l].push({{'gtm.start':new Date().getTime(),event:'gtm.js'}});"
+        "var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;"
+        "j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);"
+        f"}})(window,document,'script','dataLayer','{gtm_esc}');</script>"
+    )
+
+
 def cabecera_comun(titulo, descripcion, canonica, imagen_url, imagen_alt, tipo_og, extra_meta="", json_ld=None, tam=None):
     tam_meta = ""
     if tam:
@@ -313,6 +330,7 @@ def cabecera_comun(titulo, descripcion, canonica, imagen_url, imagen_alt, tipo_o
     return (
         '<!doctype html><html lang="es"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        f"{gtm_head_snippet()}"
         f'<meta name="description" content="{esc(descripcion)}">'
         f"<title>{esc(titulo)}</title>"
         f'<link rel="canonical" href="{canonica}">'
@@ -352,7 +370,9 @@ def cf_analytics_snippet():
 
 PIE = ('<footer class="foot">TERRA BEATS · Naturaleza, sonido y presencia · '
        '<a href="/universo/">Universo TERRA</a> · <a href="/faq.html">FAQ</a> · '
-       '<a href="/transparencia.html">Transparencia</a></footer>'
+       '<a href="/transparencia.html">Transparencia</a> · '
+       '<a href="#preferencias-cookies" data-consent-prefs>Preferencias de cookies</a></footer>'
+       '<script src="/consent.js" defer></script>'
        '<script src="/terra-embed.js" defer></script>'
        + cf_analytics_snippet() + '</body></html>\n')
 
