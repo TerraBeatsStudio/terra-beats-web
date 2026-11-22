@@ -440,7 +440,7 @@ footer.site-footer{display:block;background:#091b27;color:#c4d1d4;padding:64px 8
 .carousel-controls{justify-content:space-between}
 .carousel-caption{white-space:normal}
 .playground select{appearance:none;-webkit-appearance:none;-moz-appearance:none;height:46px;line-height:20px;padding:12px 38px 12px 14px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%23b5cbd6' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5 6 6.5l5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:12px}
-@media (max-width:700px){.hero-logo{display:none}.site-footer{padding-bottom:96px}}
+@media (max-width:700px){.hero-logo{display:none}.site-footer{padding-bottom:96px}.footer-bottom{padding-right:64px}}
 
 /* Glassmorphism custom select, refined buttons & breathing phase halo */
 .tb-select{position:relative;margin-top:9px;max-width:360px}
