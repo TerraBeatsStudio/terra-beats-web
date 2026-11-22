@@ -98,7 +98,7 @@ def leer_articulo(ruta):
     art["destacado"] = str(datos.get("destacado", "no")).lower() in ("si", "sí", "true", "yes")
     palabras = len(re.findall(r"\w+", cuerpo))
     art["minutos"] = max(1, round(palabras / 200))
-    cientificos = " ".join(re.findall(r"\*([^*]+)\*", cuerpo))
+    cientificos = " ".join(re.findall(r"(?<!\*)\*(?!\*)([^*]+)(?<!\*)\*(?!\*)", cuerpo))
     art["busqueda"] = " ".join([
         datos["titulo"], datos["categoria"], datos["tarjeta_titulo"],
         datos["tarjeta_texto"], datos["entradilla"], cientificos
