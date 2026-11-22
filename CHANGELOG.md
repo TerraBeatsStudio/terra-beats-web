@@ -1,3 +1,10 @@
+# Mejoras de marca, Universo TERRA, UX inmersiva y YouTube/RGPD — 2026-11-22
+
+- Identidad visual: actualizado el logotipo oficial de TERRA BEATS (Nature & Ambient Music), carrusel interactivo de 4 paisajes con vista ampliada (lightbox), desplegables estilo cristal en «Respirar», halo cian/ámbar y botón flotante minimalista de onda acústica (`44×44 px`).
+- Contenido editorial y SEO/GEO: ampliadas `polinizadores.html`, `meditacion-principiantes.md`, `huerto-urbano.md` y `romero.md`; añadidas `sonidos-lluvia-naturaleza-dormir.md`, `guardianes-de-iberia.md` y `transparencia.html`; esquema `FAQPage`, `alt` descriptivos y `<lastmod>` en `sitemap.xml`.
+- Universo TERRA y UX interactiva: filtros dinámicos por temática (`?categoria=...`), buscador instantáneo en `/universo/`, guía destacada, tiempo de lectura, barra de progreso, índice rápido (`Contenido de esta guía`), tarjetas relacionadas, escaparate de 3 guías en portada y Modo «Pausa Inmersiva» en `#explorar`.
+- Conexión YouTube y analítica RGPD: soporte opcional `youtube_id` (`youtube-nocookie.com`) en `tools/publicar_universo.py`, hueco para `cloudflare_analytics_token` en `tools/sitio.json` y apartado de analítica anónima sin cookies en `transparencia.html`.
+
 # Publicación en GitHub Pages con terrabeatsstudio.com — 2026-11-21
 
 - Workflow `.github/workflows/pages.yml` publica `dist/` en GitHub Pages en cada cambio de `main`; `comprobar.yml` verifica Universo en cada PR.
