@@ -20,5 +20,5 @@
     "imagen": "romero-ia.jpg",
     "imagen_alt": "Recreación de una planta de romero en maceta bajo el sol mediterráneo"
   },
-  "paginas_fijas": ["/", "/faq.html", "/polinizadores.html"]
+  "paginas_fijas": ["/", "/faq.html", "/polinizadores.html", "/transparencia.html"]
 }

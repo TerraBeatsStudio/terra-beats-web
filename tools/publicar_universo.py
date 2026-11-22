@@ -114,7 +114,26 @@ def leer_articulo(ruta):
     art["imagen_tam"] = medir_imagen(imagen)
 
     art["cuerpo_html"] = markdown_a_html(cuerpo, ruta.name)
+    art["faqs"] = extraer_faqs(cuerpo)
     return art
+
+
+def extraer_faqs(cuerpo):
+    m = re.search(r"^## Preguntas frecuentes\s*\n(.*?)(?=^## |\Z)", cuerpo, flags=re.M | re.S)
+    if not m:
+        return []
+    faqs = []
+    bloques = re.split(r"^### ", m.group(1).strip(), flags=re.M)
+    for b in bloques:
+        b = b.strip()
+        if not b or "\n" not in b:
+            continue
+        preg, resp = b.split("\n", 1)
+        resp_limpia = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", resp.strip())
+        resp_limpia = re.sub(r"[*_`]+", "", " ".join(resp_limpia.split()))
+        if preg.strip() and resp_limpia:
+            faqs.append((preg.strip(), resp_limpia))
+    return faqs
 
 
 def medir_imagen(ruta):
@@ -240,7 +259,7 @@ def cabecera_comun(titulo, descripcion, canonica, imagen_url, imagen_alt, tipo_o
         f'<link rel="canonical" href="{canonica}">'
         f'<link rel="alternate" type="application/rss+xml" title="{esc(CONFIG["nombre_seccion"])}" href="{BASE}/universo/feed.xml">'
         '<meta name="theme-color" content="#07131f">'
-        f'<link rel="icon" type="image/svg+xml" href="{CONFIG["logo"]}">'
+        f'<link rel="icon" type="image/png" href="{CONFIG["logo"]}">'
         '<meta name="robots" content="index,follow,max-image-preview:large">'
         f'<meta property="og:type" content="{tipo_og}">'
         f'<meta property="og:locale" content="{CONFIG["locale_og"]}">'
@@ -265,7 +284,9 @@ def cabecera_comun(titulo, descripcion, canonica, imagen_url, imagen_alt, tipo_o
     )
 
 
-PIE = ('<footer class="foot">TERRA BEATS · Naturaleza, sonido y presencia · Naturaleza que se siente</footer>'
+PIE = ('<footer class="foot">TERRA BEATS · Naturaleza, sonido y presencia · '
+       '<a href="/universo/">Universo TERRA</a> · <a href="/faq.html">FAQ</a> · '
+       '<a href="/transparencia.html">Transparencia</a></footer>'
        '<script src="/terra-embed.js" defer></script></body></html>\n')
 
 
@@ -305,7 +326,15 @@ def pagina_articulo(art):
                     {"@type": "ListItem", "position": 3, "name": art["titulo"], "item": canonica},
                 ],
             },
-        ],
+        ] + (
+            [{
+                "@type": "FAQPage",
+                "mainEntity": [
+                    {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}}
+                    for q, a in art["faqs"]
+                ],
+            }] if art.get("faqs") else []
+        ),
     }
     extra = (f'<meta property="article:published_time" content="{publicado}">'
              f'<meta property="article:modified_time" content="{revisado}">'
@@ -345,7 +374,7 @@ def pagina_indice(articulos):
     }
     tarjetas = "".join(
         '<article class="card">'
-        f'<img src="{esc(a["imagen"])}" alt="" loading="lazy"><div class="card-body">'
+        f'<img src="{esc(a["imagen"])}" alt="{esc(a["imagen_alt"])}" loading="lazy"><div class="card-body">'
         f'<span class="tag">{esc(a["categoria"])}</span><h2>{esc(a["tarjeta_titulo"])}</h2>'
         f'<p>{en_linea(a["tarjeta_texto"])}</p><a href="{a["slug"]}.html">Leer la guía</a></div></article>'
         for a in articulos
@@ -405,8 +434,8 @@ def feed_rss(articulos):
 
 
 def sitemap(articulos):
-    urls = [(f"{BASE}{p}", None) for p in CONFIG["paginas_fijas"]]
-    ultima = max((a["revisado"] for a in articulos), default=None)
+    ultima = max((a["revisado"] for a in articulos), default=date(2026, 11, 22))
+    urls = [(f"{BASE}{p}", ultima) for p in CONFIG["paginas_fijas"]]
     urls.append((f"{BASE}/universo/", ultima))
     urls += [(f"{BASE}/universo/{a['slug']}.html", a["revisado"]) for a in articulos]
     cuerpo = "".join(

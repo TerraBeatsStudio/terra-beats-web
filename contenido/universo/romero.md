@@ -4,6 +4,7 @@ descripcion: Una guía inicial para conocer el romero en maceta y observar sus n
 categoria: Plantas aromáticas
 entradilla: Una planta aromática puede convertir un rincón cotidiano en una invitación a observar la naturaleza.
 fecha: 2026-11-19
+revisado: 2026-11-22
 orden: 1
 imagen: romero-ia.jpg
 imagen_alt: Recreación de una planta de romero en maceta bajo el sol mediterráneo
@@ -11,9 +12,17 @@ pie_imagen: Recreación visual con IA. No es una fotografía documental ni sirve
 tarjeta_titulo: El romero en maceta
 tarjeta_texto: Conoce esta planta y las primeras decisiones para cuidarla.
 sigue_explorando:
-  - Tu primer huerto | huerto-urbano.html
+  - Tu primer huerto urbano | huerto-urbano.html
+  - Abejas y polinizadores | /polinizadores.html
+  - Guardianes de Iberia | guardianes-de-iberia.html
   - Todas las guías | /universo/
 ---
+
+:::consejo En resumen (30 segundos)
+- Nombre científico actual: *Salvia rosmarinus* (sinónimo clásico: *Rosmarinus officinalis*).
+- Necesita **pleno sol (6+ horas)**, maceta de al menos **30 cm** con buen drenaje y riego moderado sin encharcar.
+- Sus flores atraen a [abejas y polinizadores](/polinizadores.html) en épocas tempranas y encaja muy bien en un [huerto urbano en casa](huerto-urbano.html).
+:::
 
 El romero es una planta aromática conocida por sus hojas fragantes y su presencia en la cocina mediterránea. Su nombre científico aceptado es *Salvia rosmarinus*. La identificación de una planta no debe basarse únicamente en una imagen o en la respuesta de un asistente.
 
@@ -45,7 +54,15 @@ Comprueba el sustrato antes de regar y observa cómo responde la planta a lo lar
 
 ## De la planta a la cocina
 
-Si deseas cocinar, utiliza romero comercial identificado y apto para consumo. Esta ficha no recomienda preparados medicinales. Puedes comenzar con pequeñas cantidades como ingrediente culinario, siguiendo una receta y tus necesidades alimentarias.
+Si deseas cocinar, utiliza romero comercial identificado y apto para consumo. Esta ficha no recomienda preparados medicinales. Puedes comenzar con pequeñas cantidades como ingrediente culinario, siguiendo una receta y tus necesidades alimentarias. Si te interesa la biodiversidad mediterránea que convive con el matorral de romero, descubre nuestra guía de [Guardianes de Iberia](guardianes-de-iberia.html) o consulta [transparencia editorial](/transparencia.html).
+
+## Preguntas frecuentes
+
+### ¿Por qué el romero tiene dos nombres científicos?
+Históricamente se llamó *Rosmarinus officinalis*, pero los estudios filogenéticos integraron el género *Rosmarinus* dentro de *Salvia*, por lo que hoy el nombre aceptado por Kew Science es *Salvia rosmarinus*.
+
+### ¿Qué tamaño de maceta necesita el romero?
+La Royal Horticultural Society recomienda una maceta de al menos **30 cm de ancho y profundidad**, con orificios de drenaje y un sustrato ligero que no retenga agua en exceso.
 
 ## Fuentes para profundizar
 
