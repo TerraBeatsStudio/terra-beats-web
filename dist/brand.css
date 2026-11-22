@@ -441,3 +441,20 @@ footer.site-footer{display:block;background:#091b27;color:#c4d1d4;padding:64px 8
 .carousel-caption{white-space:normal}
 .playground select{appearance:none;-webkit-appearance:none;-moz-appearance:none;height:46px;line-height:20px;padding:12px 38px 12px 14px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%23b5cbd6' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5 6 6.5l5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:12px}
 @media (max-width:700px){.hero-logo{display:none}.site-footer{padding-bottom:84px}}
+
+/* Glassmorphism custom select, refined buttons & breathing phase halo */
+.tb-select{position:relative;margin-top:9px;max-width:360px}
+.tb-select-trigger{width:100%;height:50px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:12px;border:1px solid rgba(0,198,255,.28);background:rgba(11,27,43,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#DDECF0;font:14px/1.2 Montserrat,Arial,sans-serif;text-align:left;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.tb-select-trigger:hover,.tb-select-trigger[aria-expanded=true]{border-color:rgba(245,166,35,.65);box-shadow:0 0 0 3px rgba(0,198,255,.12)}
+.tb-select-trigger svg{width:16px;height:16px;flex-shrink:0;color:#DDECF0;transition:transform .2s}
+.tb-select-trigger[aria-expanded=true] svg{transform:rotate(180deg);color:#F5A623}
+.tb-select-menu{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;margin:0;padding:6px;list-style:none;border-radius:12px;border:1px solid rgba(0,198,255,.28);background:rgba(11,27,43,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 16px 36px rgba(0,0,0,.45)}
+.tb-select-menu[hidden]{display:none}
+.tb-select-menu li{padding:11px 12px;border-radius:8px;color:#DDECF0;font-size:13.5px;cursor:pointer;transition:background .15s,color .15s}
+.tb-select-menu li:hover,.tb-select-menu li:focus{background:rgba(245,166,35,.14);color:#F5A623;outline:none}
+.tb-select-menu li[aria-selected=true]{background:rgba(0,198,255,.14);color:#F5A623;font-weight:600}
+.playground .secondary{border:1px solid rgba(171,232,249,.28);border-radius:100px;padding:14px 22px;background:rgba(11,27,43,.45);color:#DDECF0;transition:border-color .2s,background .2s}
+.playground .secondary:hover{border-color:rgba(245,166,35,.6);background:rgba(16,45,58,.7);color:#fff}
+.playground #breath-circle{transition:transform 4s ease-in-out,background 1.6s ease,box-shadow 1.6s ease}
+.playground #breath-circle.is-inhale{background:radial-gradient(circle at 35% 28%,#e6fffa,#00C6FF 45%,#0b4f6c 100%);box-shadow:0 0 52px rgba(0,198,255,.65),0 0 0 18px rgba(0,198,255,.1)}
+.playground #breath-circle.is-exhale{background:radial-gradient(circle at 35% 28%,#fff5e0,#F5A623 48%,#7a4908 100%);box-shadow:0 0 52px rgba(245,166,35,.58),0 0 0 18px rgba(245,166,35,.1)}

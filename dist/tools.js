@@ -8,3 +8,49 @@ const senses=[['Mira cinco detalles.','Busca una sombra, una forma o un cambio d
 const ideas=[['Mirada · 2 minutos','Sigue una sombra.','Elige una sombra cerca de tu ventana. Observa su borde, su forma y la superficie donde cae. Vuelve a mirarla más tarde: ¿qué ha cambiado?'],['Escucha · 1 minuto','Dibuja un mapa de sonidos.','Cierra los ojos si te resulta cómodo. Localiza tres sonidos y sitúalos mentalmente: cerca, lejos, a la izquierda o detrás. Después abre los ojos y comprueba qué has descubierto.'],['Creación · 5 minutos','Una foto, tres distancias.','Fotografía un elemento natural desde lejos, a media distancia y muy cerca. Compara qué cuenta cada imagen. No arranques ni alteres lo que encuentres.'],['Observación · 3 minutos','Encuentra una pequeña diferencia.','Busca dos hojas caídas. Compara sus nervios, bordes y tonos. Describe una diferencia concreta sin decidir cuál es más bonita.'],['Escucha · 2 minutos','Escucha entre los sonidos.','Elige un sonido repetido: pasos, agua o viento. Presta atención a los intervalos y a los cambios. ¿Es tan uniforme como parecía al principio?'],['Mirada · 2 minutos','Colecciona colores sin llevarte nada.','Encuentra cinco tonos distintos en un árbol, una planta o una vista desde la ventana. Ponles nombres propios. Puedes anotarlos o fotografiarlos.']];let ideaIndex=Number.isInteger(saved.ideaIndex)?saved.ideaIndex%ideas.length:0;if(!Array.isArray(saved.favorites))saved.favorites=[];function drawIdea(){const [cat,title,body]=ideas[ideaIndex];$('idea-category').textContent=cat;$('idea-title').textContent=title;$('idea-body').textContent=body;const yes=saved.favorites.includes(ideaIndex);$('idea-save').textContent=yes?'Quitar de guardadas':'Guardar propuesta';$('idea-saved').textContent=yes?'Guardada en este navegador.':'';drawFavorites()}function drawFavorites(){$('saved-count').textContent=`(${saved.favorites.length})`;$('saved-list').replaceChildren();for(const i of saved.favorites){if(!ideas[i])continue;const li=document.createElement('li'),b=document.createElement('button');li.textContent=ideas[i][1];b.textContent='Abrir';b.className='secondary';b.onclick=()=>{ideaIndex=i;drawIdea();$('idea-title').scrollIntoView({behavior:'smooth'})};li.append(b);$('saved-list').append(li)}if(!saved.favorites.length){const li=document.createElement('li');li.textContent='Todavía no has guardado propuestas.';$('saved-list').append(li)}}$('new-idea').onclick=()=>{ideaIndex=(ideaIndex+1)%ideas.length;saved.ideaIndex=ideaIndex;persist();drawIdea()};$('idea-save').onclick=()=>{saved.favorites=saved.favorites.includes(ideaIndex)?saved.favorites.filter(i=>i!==ideaIndex):[...saved.favorites,ideaIndex];persist();drawIdea()};drawIdea();$('clear-local').onclick=()=>{saved={favorites:[]};persist();intent.value='';counters();drawIdea();$('session-count').textContent='Datos locales borrados.'};document.querySelectorAll('[data-open-breath]').forEach(b=>b.onclick=e=>{e.preventDefault();tab('breath');$('explorar').scrollIntoView({behavior:'smooth'});$('breath-start').focus({preventScroll:true})});window.addEventListener('pagehide',()=>{stopSound();clearInterval(bt);clearInterval(ft)});
 })();
 document.addEventListener('keydown',function(e){if(e.code!=='Space'||e.metaKey||e.ctrlKey||e.altKey)return;var t=e.target&&e.target.tagName;if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT'||t==='BUTTON'||(e.target&&e.target.isContentEditable))return;var sound=document.getElementById('sound-panel'),focus=document.getElementById('focus-panel');if(sound&&!sound.hidden){e.preventDefault();var b=sound.querySelector('.btn.dark');if(b)b.click();}else if(focus&&!focus.hidden){e.preventDefault();var f=focus.querySelector('.btn.dark');if(f)f.click();}});
+
+(()=>{
+  ['breath-rhythm','breath-length'].forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;
+    sel.style.display='none';
+    const wrap=document.createElement('div');wrap.className='tb-select';
+    const btn=document.createElement('button');btn.type='button';btn.className='tb-select-trigger';btn.setAttribute('aria-haspopup','listbox');btn.setAttribute('aria-expanded','false');
+    const lbl=document.createElement('span');lbl.textContent=sel.options[sel.selectedIndex]?.text||'';
+    btn.append(lbl);
+    btn.insertAdjacentHTML('beforeend','<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>');
+    const menu=document.createElement('ul');menu.className='tb-select-menu';menu.setAttribute('role','listbox');menu.hidden=true;
+    const opts=[...sel.options].map((o,i)=>{
+      const li=document.createElement('li');li.setAttribute('role','option');li.tabIndex=-1;li.dataset.value=o.value;li.textContent=o.text;li.setAttribute('aria-selected',String(i===sel.selectedIndex));
+      li.addEventListener('click',()=>{
+        sel.value=o.value;sel.dispatchEvent(new Event('change',{bubbles:true}));
+        lbl.textContent=o.text;
+        opts.forEach(x=>x.setAttribute('aria-selected',String(x===li)));
+        menu.hidden=true;btn.setAttribute('aria-expanded','false');btn.focus();
+      });
+      li.addEventListener('keydown',e=>{
+        if(e.key==='Enter'||e.key===' '){e.preventDefault();li.click()}
+        else if(e.key==='Escape'){menu.hidden=true;btn.setAttribute('aria-expanded','false');btn.focus()}
+        else if(e.key==='ArrowDown'){e.preventDefault();(li.nextElementSibling||opts[0]).focus()}
+        else if(e.key==='ArrowUp'){e.preventDefault();(li.previousElementSibling||opts[opts.length-1]).focus()}
+      });
+      menu.append(li);return li;
+    });
+    btn.addEventListener('click',()=>{
+      const open=menu.hidden;
+      document.querySelectorAll('.tb-select-menu').forEach(m=>{if(m!==menu){m.hidden=true;m.previousElementSibling?.setAttribute('aria-expanded','false')}});
+      menu.hidden=!open;btn.setAttribute('aria-expanded',String(open));
+      if(open)(menu.querySelector('[aria-selected="true"]')||opts[0])?.focus();
+    });
+    document.addEventListener('click',e=>{if(!wrap.contains(e.target)){menu.hidden=true;btn.setAttribute('aria-expanded','false')}});
+    wrap.append(btn,menu);sel.after(wrap);
+  });
+  const prompt=document.getElementById('breath-prompt'),circle=document.getElementById('breath-circle');
+  if(prompt&&circle){
+    const sync=()=>{
+      const t=(prompt.textContent||'').toLowerCase();
+      circle.classList.toggle('is-inhale',t.includes('inspira'));
+      circle.classList.toggle('is-exhale',t.includes('suelta')||t.includes('exhala'));
+    };
+    new MutationObserver(sync).observe(prompt,{childList:true,characterData:true,subtree:true});
+  }
+})();
