@@ -473,3 +473,21 @@ footer.site-footer{display:block;background:#091b27;color:#c4d1d4;padding:64px 8
 .universo-cta{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;border:1px solid rgba(0,198,255,.4);background:rgba(11,27,43,.75);color:#DDECF0;font-weight:600;font-size:14px;text-decoration:none;transition:border-color .2s,background .2s}
 .universo-cta:hover{border-color:#F5A623;background:rgba(245,166,35,.15);color:#fff}
 @media (max-width:900px){.universo-home-grid{grid-template-columns:1fr}}
+
+/* Modo Pausa Inmersiva */
+.btn-immersive{position:absolute;top:18px;right:18px;z-index:5;display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;border:1px solid rgba(0,198,255,.28);background:rgba(11,27,43,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#DDECF0;font:600 12px/1.2 Montserrat,Arial,sans-serif;cursor:pointer;transition:border-color .2s,color .2s,transform .15s}
+.btn-immersive:hover{border-color:#F5A623;color:#F5A623;transform:translateY(-1px)}
+.btn-immersive svg{width:14px;height:14px;display:block}
+.immersive-hud{position:fixed;top:0;left:0;right:0;z-index:2147483200;display:none;align-items:center;justify-content:space-between;gap:12px;padding:14px 24px;background:rgba(7,19,31,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,198,255,.2);color:#DDECF0}
+body.is-immersive .immersive-hud{display:flex}
+body.is-immersive header,body.is-immersive main>section:not(#explorar),body.is-immersive footer,body.is-immersive #explorar .section-head,body.is-immersive #explorar .tool-tabs,body.is-immersive #explorar .session-bar,body.is-immersive #explorar .note,body.is-immersive .terra-floating-orb,body.is-immersive .btn-immersive{display:none!important}
+body.is-immersive{background:#07131F;overflow-x:hidden}
+body.is-immersive #explorar{min-height:100vh;padding:84px 6% 40px;background:#07131F;display:flex;align-items:center;justify-content:center}
+body.is-immersive #explorar .tool-panel{width:min(960px,100%);margin:0 auto}
+.immersive-timer{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.immersive-pill{padding:6px 12px;border-radius:999px;border:1px solid rgba(0,198,255,.28);background:rgba(11,27,43,.7);color:#DDECF0;font:600 12px/1.2 Montserrat,Arial,sans-serif;cursor:pointer}
+.immersive-pill[aria-pressed=true]{border-color:#F5A623;color:#F5A623;background:rgba(245,166,35,.14)}
+.immersive-clock{font:700 15px/1 Montserrat,Arial,sans-serif;color:#00C6FF;min-width:52px;text-align:center}
+.immersive-exit{padding:8px 16px;border-radius:999px;border:1px solid rgba(245,166,35,.5);background:rgba(11,27,43,.85);color:#fff;font:600 12.5px/1.2 Montserrat,Arial,sans-serif;cursor:pointer}
+.immersive-exit:hover{background:rgba(245,166,35,.2);border-color:#F5A623}
+@media(max-width:700px){.btn-immersive{top:12px;right:12px;padding:7px 11px;font-size:11px}.immersive-hud{flex-wrap:wrap;padding:10px 14px}}

@@ -98,6 +98,11 @@ def leer_articulo(ruta):
     art["destacado"] = str(datos.get("destacado", "no")).lower() in ("si", "sí", "true", "yes")
     palabras = len(re.findall(r"\w+", cuerpo))
     art["minutos"] = max(1, round(palabras / 200))
+    cientificos = " ".join(re.findall(r"\*([^*]+)\*", cuerpo))
+    art["busqueda"] = " ".join([
+        datos["titulo"], datos["categoria"], datos["tarjeta_titulo"],
+        datos["tarjeta_texto"], datos["entradilla"], cientificos
+    ]).lower()
     art.setdefault("titulo_seo", f"{datos['titulo']} | {CONFIG['nombre_seccion']}")
     enlaces = []
     for item in datos.get("sigue_explorando", []) or []:
@@ -420,13 +425,19 @@ def pagina_indice(articulos):
     for cat, n in conteos.items():
         botones.append(f'<button type="button" class="filter-pill" data-filter="{esc(cat)}" aria-pressed="false">{esc(cat)} ({n})</button>')
     botones.append('<a class="filter-pill" href="/polinizadores.html">Polinizadores ↗</a>')
-    barra_filtros = f'<div class="filter-bar" role="group" aria-label="Filtrar guías por temática">{"".join(botones)}</div>'
+    barra_filtros = (
+        '<div class="filter-controls">'
+        f'<div class="filter-bar" role="group" aria-label="Filtrar guías por temática">{"".join(botones)}</div>'
+        '<input type="search" id="universo-search" class="search-input" '
+        'placeholder="Buscar por especie, tema o palabra..." aria-label="Buscar guías en Universo TERRA">'
+        '</div>'
+    )
 
     destacado = next((a for a in articulos if a["destacado"]), articulos[0] if articulos else None)
     destacado_html = ""
     if destacado:
         destacado_html = (
-            f'<article class="featured-card" data-cat="{esc(destacado["categoria"])}">'
+            f'<article class="featured-card" data-cat="{esc(destacado["categoria"])}" data-search="{esc(destacado["busqueda"])}">'
             f'<img src="{esc(destacado["imagen"])}" alt="{esc(destacado["imagen_alt"])}">'
             f'<div class="featured-body">'
             f'<div class="meta-row"><span class="tag">Guía destacada · {esc(destacado["categoria"])}</span>'
@@ -439,7 +450,7 @@ def pagina_indice(articulos):
 
     resto = [a for a in articulos if not destacado or a["slug"] != destacado["slug"]]
     tarjetas = "".join(
-        f'<article class="card" data-cat="{esc(a["categoria"])}">'
+        f'<article class="card" data-cat="{esc(a["categoria"])}" data-search="{esc(a["busqueda"])}">'
         f'<img src="{esc(a["imagen"])}" alt="{esc(a["imagen_alt"])}" loading="lazy"><div class="card-body">'
         f'<div class="meta-row"><span class="tag">{esc(a["categoria"])}</span>'
         f'<span class="read-time">{a["minutos"]} min</span></div>'
@@ -447,16 +458,35 @@ def pagina_indice(articulos):
         f'<p>{en_linea(a["tarjeta_texto"])}</p><a href="{a["slug"]}.html">Leer la guía →</a></div></article>'
         for a in resto
     )
+    vacio_html = (
+        '<div id="universo-empty" class="empty-state" hidden>'
+        '<p>No hay guías que coincidan con tu búsqueda o filtro.</p>'
+        '<button type="button" class="filter-pill" id="universo-clear">Limpiar filtros</button></div>'
+    )
     filtro_js = (
         "<script>(()=>{const pills=[...document.querySelectorAll('.filter-pill[data-filter]')];"
         "const items=[...document.querySelectorAll('[data-cat]')];"
-        "function apply(cat){pills.forEach(p=>p.setAttribute('aria-pressed',String(p.dataset.filter===cat)));"
-        "items.forEach(el=>{el.hidden=(cat!=='todas'&&el.dataset.cat!==cat)});"
-        "const u=new URL(location.href);if(cat==='todas')u.searchParams.delete('categoria');else u.searchParams.set('categoria',cat);"
+        "const input=document.getElementById('universo-search');"
+        "const empty=document.getElementById('universo-empty');"
+        "const clearBtn=document.getElementById('universo-clear');"
+        "const norm=s=>(s||'').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');"
+        "let activeCat='todas';"
+        "function apply(){"
+        "const q=norm(input?input.value.trim():'');"
+        "let vis=0;"
+        "pills.forEach(p=>p.setAttribute('aria-pressed',String(p.dataset.filter===activeCat)));"
+        "items.forEach(el=>{"
+        "const okCat=(activeCat==='todas'||el.dataset.cat===activeCat);"
+        "const okTxt=!q||norm(el.dataset.search).includes(q);"
+        "const show=okCat&&okTxt;el.hidden=!show;if(show)vis++});"
+        "if(empty)empty.hidden=vis>0;"
+        "const u=new URL(location.href);if(activeCat==='todas')u.searchParams.delete('categoria');else u.searchParams.set('categoria',activeCat);"
         "history.replaceState(null,'',u)}"
-        "pills.forEach(p=>p.addEventListener('click',()=>apply(p.dataset.filter)));"
+        "pills.forEach(p=>p.addEventListener('click',()=>{activeCat=p.dataset.filter;apply()}));"
+        "if(input)input.addEventListener('input',apply);"
+        "if(clearBtn)clearBtn.addEventListener('click',()=>{activeCat='todas';if(input)input.value='';apply()});"
         "const init=new URLSearchParams(location.search).get('categoria');"
-        "if(init&&pills.some(p=>p.dataset.filter===init))apply(init);})();</script>"
+        "if(init&&pills.some(p=>p.dataset.filter===init)){activeCat=init;apply()}})();</script>"
     )
     return (
         cabecera_comun(ind["titulo_seo"], ind["descripcion"], canonica, imagen_url, ind["imagen_alt"],
@@ -464,7 +494,7 @@ def pagina_indice(articulos):
         + '<main class="wrap"><div class="hero">'
         f'<span class="tag">{esc(ind["etiqueta"])}</span><h1>{esc(ind["titulo"])}</h1>'
         f'<p class="lead">{esc(ind["entradilla"])}</p><p class="notice">{esc(ind["aviso"])}</p></div>'
-        f'<h2>Empieza a descubrir</h2>{barra_filtros}{destacado_html}<div class="grid">{tarjetas}</div>'
+        f'<h2>Empieza a descubrir</h2>{barra_filtros}{destacado_html}<div class="grid">{tarjetas}</div>{vacio_html}'
         f'<p class="notice">{esc(ind["aviso_final"])}</p></main>' + filtro_js + PIE
     )
 

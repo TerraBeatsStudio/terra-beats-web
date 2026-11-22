@@ -54,3 +54,37 @@ document.addEventListener('keydown',function(e){if(e.code!=='Space'||e.metaKey||
     new MutationObserver(sync).observe(prompt,{childList:true,characterData:true,subtree:true});
   }
 })();
+
+(()=>{
+  const panels=['breath-panel','sound-panel'].map(id=>document.getElementById(id)).filter(Boolean);
+  if(!panels.length)return;
+  const hud=document.createElement('div');
+  hud.className='immersive-hud';
+  hud.innerHTML='<div class="immersive-timer"><span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#F5A623">Pausa inmersiva</span><button type="button" class="immersive-pill" data-mins="5" aria-pressed="true">5 min</button><button type="button" class="immersive-pill" data-mins="10" aria-pressed="false">10 min</button><button type="button" class="immersive-pill" data-mins="15" aria-pressed="false">15 min</button><button type="button" class="immersive-pill" data-mins="25" aria-pressed="false">25 min</button><span class="immersive-clock" id="imm-clock">05:00</span><button type="button" class="immersive-pill" id="imm-toggle">Iniciar</button></div><button type="button" class="immersive-exit" id="imm-exit">Salir del modo inmersivo ×</button>';
+  document.body.append(hud);
+
+  let secs=300,iv=null;
+  const clock=document.getElementById('imm-clock');
+  const toggle=document.getElementById('imm-toggle');
+  const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  function stopTimer(){if(iv){clearInterval(iv);iv=null}if(toggle)toggle.textContent='Iniciar'}
+  hud.querySelectorAll('[data-mins]').forEach(b=>b.addEventListener('click',()=>{
+    stopTimer();secs=Number(b.dataset.mins)*60;if(clock)clock.textContent=fmt(secs);
+    hud.querySelectorAll('[data-mins]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  }));
+  toggle?.addEventListener('click',()=>{
+    if(iv){stopTimer();return}
+    toggle.textContent='Pausar';
+    iv=setInterval(()=>{secs=Math.max(0,secs-1);if(clock)clock.textContent=fmt(secs);if(secs===0)stopTimer()},1000);
+  });
+  function exitImmersive(){document.body.classList.remove('is-immersive');stopTimer()}
+  document.getElementById('imm-exit')?.addEventListener('click',exitImmersive);
+  window.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('is-immersive'))exitImmersive()});
+
+  panels.forEach(p=>{
+    const b=document.createElement('button');b.type='button';b.className='btn-immersive';
+    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg><span>Modo inmersivo</span>';
+    b.addEventListener('click',()=>{document.body.classList.add('is-immersive');window.scrollTo({top:0,behavior:'instant'})});
+    p.append(b);
+  });
+})();
