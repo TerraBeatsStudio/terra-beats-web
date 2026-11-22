@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./dist/assets/**)",
+      "Read(./dist/**/*.jpg)",
+      "Read(./dist/**/*.jpeg)",
+      "Read(./dist/**/*.png)",
+      "Read(./dist/**/*.webp)",
+      "Read(./dist/**/*.ttf)",
+      "Read(./.openai/**)"
+    ]
+  }
+}
