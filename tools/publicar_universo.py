@@ -95,6 +95,9 @@ def leer_articulo(ruta):
     art["revisado"] = leer_fecha(datos["revisado"], "revisado", ruta.name) if datos.get("revisado") else art["fecha"]
     art["orden"] = int(datos.get("orden", 100))
     art["borrador"] = str(datos.get("borrador", "no")).lower() in ("si", "sí", "true", "yes")
+    art["destacado"] = str(datos.get("destacado", "no")).lower() in ("si", "sí", "true", "yes")
+    palabras = len(re.findall(r"\w+", cuerpo))
+    art["minutos"] = max(1, round(palabras / 200))
     art.setdefault("titulo_seo", f"{datos['titulo']} | {CONFIG['nombre_seccion']}")
     enlaces = []
     for item in datos.get("sigue_explorando", []) or []:
@@ -113,7 +116,7 @@ def leer_articulo(ruta):
     art["imagen_tipo"] = TIPOS_IMAGEN[imagen.suffix.lower()]
     art["imagen_tam"] = medir_imagen(imagen)
 
-    art["cuerpo_html"] = markdown_a_html(cuerpo, ruta.name)
+    art["cuerpo_html"], art["toc"] = markdown_a_html(cuerpo, ruta.name)
     art["faqs"] = extraer_faqs(cuerpo)
     return art
 
@@ -174,9 +177,17 @@ def figura(linea):
     return f'<figure><img src="{esc(src)}" alt="{esc(alt)}" loading="lazy">{pie_html}</figure>'
 
 
+def slugify_h2(texto):
+    s = texto.lower()
+    for a, b in (("á", "a"), ("é", "e"), ("í", "i"), ("ó", "o"), ("ú", "u"), ("ü", "u"), ("ñ", "n")):
+        s = s.replace(a, b)
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+    return s or "seccion"
+
+
 def markdown_a_html(texto, archivo):
     lineas = texto.strip("\n").split("\n")
-    partes, i = [], 0
+    partes, toc, usados, i = [], [], set(), 0
     while i < len(lineas):
         linea = lineas[i]
         quitada = linea.strip()
@@ -208,7 +219,13 @@ def markdown_a_html(texto, archivo):
             i += 1
             continue
         if quitada.startswith("## "):
-            partes.append(f"<h2>{en_linea(quitada[3:])}</h2>")
+            h2_txt = quitada[3:].strip()
+            hid = slugify_h2(h2_txt)
+            while hid in usados:
+                hid += "-2"
+            usados.add(hid)
+            toc.append((hid, h2_txt))
+            partes.append(f'<h2 id="{hid}">{en_linea(h2_txt)}</h2>')
             i += 1
             continue
         if quitada.startswith("# "):
@@ -237,7 +254,7 @@ def markdown_a_html(texto, archivo):
             trozos.append(lineas[i].strip())
             i += 1
         partes.append(f"<p>{en_linea(' '.join(trozos))}</p>")
-    return "".join(partes)
+    return "".join(partes), toc
 
 
 # ---------------------------------------------------------------- plantillas
@@ -294,7 +311,7 @@ def momento(d):
     return datetime.combine(d, time(9, 0), tzinfo=timezone.utc)
 
 
-def pagina_articulo(art):
+def pagina_articulo(art, articulos):
     canonica = f"{BASE}/universo/{art['slug']}.html"
     imagen_url = f"{BASE}/universo/{art['imagen']}"
     publicado, revisado = art["fecha"].isoformat(), art["revisado"].isoformat()
@@ -339,21 +356,45 @@ def pagina_articulo(art):
     extra = (f'<meta property="article:published_time" content="{publicado}">'
              f'<meta property="article:modified_time" content="{revisado}">'
              f'<meta property="article:section" content="{esc(art["categoria"])}">')
+    toc_html = ""
+    if art.get("toc"):
+        toc_items = "".join(f'<li><a href="#{tid}">{esc(ttxt)}</a></li>' for tid, ttxt in art["toc"])
+        toc_html = f'<nav class="toc-box" aria-label="Contenido de esta guía"><strong>Contenido de esta guía</strong><ol>{toc_items}</ol></nav>'
+
+    otros = [a for a in articulos if a["slug"] != art["slug"]]
+    mismos = [a for a in otros if a["categoria"] == art["categoria"]]
+    distintos = [a for a in otros if a["categoria"] != art["categoria"]]
+    rel = (mismos + distintos)[:2]
+    rel_cards = "".join(
+        f'<a class="related-card" href="{r["slug"]}.html">'
+        f'<img src="{esc(r["imagen"])}" alt="{esc(r["imagen_alt"])}" loading="lazy">'
+        f'<div><span class="tag">{esc(r["categoria"])}</span><h3>{esc(r["tarjeta_titulo"])}</h3>'
+        f'<span style="font-size:.8rem;color:#9cc2cf">{r["minutos"]} min de lectura</span></div></a>'
+        for r in rel
+    )
     enlaces = art["sigue_explorando"] or [("Todas las guías", "/universo/")]
     enlaces_html = "".join(f'<a href="{esc(u)}">{esc(t)}</a>' for t, u in enlaces)
+    progreso_js = (
+        "<script>(()=>{const b=document.querySelector('.read-progress span');if(!b)return;"
+        "const u=()=>{const h=document.documentElement.scrollHeight-innerHeight;"
+        "b.style.width=(h>0?Math.min(100,Math.max(0,scrollY/h*100)):0)+'%'};"
+        "addEventListener('scroll',u,{passive:true});u()})();</script>"
+    )
     return (
         cabecera_comun(art["titulo_seo"], art["descripcion"], canonica, imagen_url, art["imagen_alt"],
                        "article", extra, json_ld, art["imagen_tam"])
+        + '<div class="read-progress" aria-hidden="true"><span></span></div>'
         + '<main class="wrap"><article class="article"><div class="hero">'
         f'<span class="tag">{esc(art["categoria"])}</span>'
         f"<h1>{esc(art['titulo'])}</h1>"
         f'<p class="lead">{en_linea(art["entradilla"])}</p>'
-        f'<p class="notice">Revisado el <time datetime="{revisado}">{fecha_larga(art["revisado"])}</time></p></div>'
+        f'<p class="notice">Revisado el <time datetime="{revisado}">{fecha_larga(art["revisado"])}</time> · {art["minutos"]} min de lectura</p></div>'
         f'<figure><img src="{esc(art["imagen"])}" alt="{esc(art["imagen_alt"])}">'
         f'<figcaption>{en_linea(art["pie_imagen"])}</figcaption></figure>'
-        f"{art['cuerpo_html']}"
-        f'<div class="links"><strong>Sigue explorando</strong><br>{enlaces_html}</div>'
-        "</article></main>" + PIE
+        f"{toc_html}{art['cuerpo_html']}"
+        f'<div class="links"><strong>Sigue explorando</strong><div class="related-grid">{rel_cards}</div>'
+        f'<div style="margin-top:14px">{enlaces_html}</div></div>'
+        "</article></main>" + progreso_js + PIE
     )
 
 
@@ -372,12 +413,50 @@ def pagina_indice(articulos):
         "hasPart": [{"@type": "BlogPosting", "headline": a["titulo"], "url": f"{BASE}/universo/{a['slug']}.html"}
                     for a in articulos],
     }
+    conteos = {}
+    for a in articulos:
+        conteos[a["categoria"]] = conteos.get(a["categoria"], 0) + 1
+    botones = [f'<button type="button" class="filter-pill" data-filter="todas" aria-pressed="true">Todas ({len(articulos)})</button>']
+    for cat, n in conteos.items():
+        botones.append(f'<button type="button" class="filter-pill" data-filter="{esc(cat)}" aria-pressed="false">{esc(cat)} ({n})</button>')
+    botones.append('<a class="filter-pill" href="/polinizadores.html">Polinizadores ↗</a>')
+    barra_filtros = f'<div class="filter-bar" role="group" aria-label="Filtrar guías por temática">{"".join(botones)}</div>'
+
+    destacado = next((a for a in articulos if a["destacado"]), articulos[0] if articulos else None)
+    destacado_html = ""
+    if destacado:
+        destacado_html = (
+            f'<article class="featured-card" data-cat="{esc(destacado["categoria"])}">'
+            f'<img src="{esc(destacado["imagen"])}" alt="{esc(destacado["imagen_alt"])}">'
+            f'<div class="featured-body">'
+            f'<div class="meta-row"><span class="tag">Guía destacada · {esc(destacado["categoria"])}</span>'
+            f'<span class="read-time">{destacado["minutos"]} min de lectura</span></div>'
+            f'<h2>{esc(destacado["tarjeta_titulo"])}</h2>'
+            f'<p>{en_linea(destacado["entradilla"])}</p>'
+            f'<a class="btn-read" href="{destacado["slug"]}.html">Leer la guía →</a>'
+            f'</div></article>'
+        )
+
+    resto = [a for a in articulos if not destacado or a["slug"] != destacado["slug"]]
     tarjetas = "".join(
-        '<article class="card">'
+        f'<article class="card" data-cat="{esc(a["categoria"])}">'
         f'<img src="{esc(a["imagen"])}" alt="{esc(a["imagen_alt"])}" loading="lazy"><div class="card-body">'
-        f'<span class="tag">{esc(a["categoria"])}</span><h2>{esc(a["tarjeta_titulo"])}</h2>'
-        f'<p>{en_linea(a["tarjeta_texto"])}</p><a href="{a["slug"]}.html">Leer la guía</a></div></article>'
-        for a in articulos
+        f'<div class="meta-row"><span class="tag">{esc(a["categoria"])}</span>'
+        f'<span class="read-time">{a["minutos"]} min</span></div>'
+        f'<h2>{esc(a["tarjeta_titulo"])}</h2>'
+        f'<p>{en_linea(a["tarjeta_texto"])}</p><a href="{a["slug"]}.html">Leer la guía →</a></div></article>'
+        for a in resto
+    )
+    filtro_js = (
+        "<script>(()=>{const pills=[...document.querySelectorAll('.filter-pill[data-filter]')];"
+        "const items=[...document.querySelectorAll('[data-cat]')];"
+        "function apply(cat){pills.forEach(p=>p.setAttribute('aria-pressed',String(p.dataset.filter===cat)));"
+        "items.forEach(el=>{el.hidden=(cat!=='todas'&&el.dataset.cat!==cat)});"
+        "const u=new URL(location.href);if(cat==='todas')u.searchParams.delete('categoria');else u.searchParams.set('categoria',cat);"
+        "history.replaceState(null,'',u)}"
+        "pills.forEach(p=>p.addEventListener('click',()=>apply(p.dataset.filter)));"
+        "const init=new URLSearchParams(location.search).get('categoria');"
+        "if(init&&pills.some(p=>p.dataset.filter===init))apply(init);})();</script>"
     )
     return (
         cabecera_comun(ind["titulo_seo"], ind["descripcion"], canonica, imagen_url, ind["imagen_alt"],
@@ -385,8 +464,8 @@ def pagina_indice(articulos):
         + '<main class="wrap"><div class="hero">'
         f'<span class="tag">{esc(ind["etiqueta"])}</span><h1>{esc(ind["titulo"])}</h1>'
         f'<p class="lead">{esc(ind["entradilla"])}</p><p class="notice">{esc(ind["aviso"])}</p></div>'
-        f'<h2>Empieza a descubrir</h2><div class="grid">{tarjetas}</div>'
-        f'<p class="notice">{esc(ind["aviso_final"])}</p></main>' + PIE
+        f'<h2>Empieza a descubrir</h2>{barra_filtros}{destacado_html}<div class="grid">{tarjetas}</div>'
+        f'<p class="notice">{esc(ind["aviso_final"])}</p></main>' + filtro_js + PIE
     )
 
 
@@ -461,10 +540,32 @@ def generar():
         articulos.append(art)
     articulos.sort(key=lambda a: (-a["fecha"].toordinal(), a["orden"], a["slug"]))
 
-    salidas = {SALIDA / f"{a['slug']}.html": pagina_articulo(a) for a in articulos}
+    salidas = {SALIDA / f"{a['slug']}.html": pagina_articulo(a, articulos) for a in articulos}
     salidas[SALIDA / "index.html"] = pagina_indice(articulos)
     salidas[SALIDA / "feed.xml"] = feed_rss(articulos)
     salidas[DIST / "sitemap.xml"] = sitemap(articulos)
+
+    portada_path = DIST / "index.html"
+    if portada_path.is_file():
+        portada_txt = portada_path.read_text(encoding="utf-8")
+        if "<!-- UNIVERSO_INICIO -->" in portada_txt and "<!-- /UNIVERSO_FIN -->" in portada_txt:
+            top3 = "".join(
+                f'<article class="universo-home-card">'
+                f'<img src="/universo/{esc(a["imagen"])}" alt="{esc(a["imagen_alt"])}" loading="lazy">'
+                f'<div class="universo-home-body">'
+                f'<div class="universo-home-meta"><span>{esc(a["categoria"])}</span><span>{a["minutos"]} min</span></div>'
+                f'<h3>{esc(a["tarjeta_titulo"])}</h3>'
+                f'<p>{en_linea(a["tarjeta_texto"])}</p>'
+                f'<a href="/universo/{a["slug"]}.html">Leer la guía →</a></div></article>'
+                for a in articulos[:3]
+            )
+            bloque = (
+                f'<!-- UNIVERSO_INICIO --><div class="universo-home-grid">{top3}</div>'
+                '<a class="universo-cta" href="/universo/">Explorar todo Universo TERRA →</a><!-- /UNIVERSO_FIN -->'
+            )
+            salidas[portada_path] = re.sub(
+                r"<!-- UNIVERSO_INICIO -->.*?<!-- /UNIVERSO_FIN -->", bloque, portada_txt, flags=re.S
+            )
 
     sueltos = {p for p in SALIDA.glob("*.html")} - set(salidas)
     for p in sorted(sueltos):
