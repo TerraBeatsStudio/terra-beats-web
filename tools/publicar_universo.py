@@ -96,6 +96,7 @@ def leer_articulo(ruta):
     art["orden"] = int(datos.get("orden", 100))
     art["borrador"] = str(datos.get("borrador", "no")).lower() in ("si", "sí", "true", "yes")
     art["destacado"] = str(datos.get("destacado", "no")).lower() in ("si", "sí", "true", "yes")
+    art["youtube_id"] = str(datos.get("youtube_id", "")).strip()
     palabras = len(re.findall(r"\w+", cuerpo))
     art["minutos"] = max(1, round(palabras / 200))
     cientificos = " ".join(re.findall(r"(?<!\*)\*(?!\*)([^*]+)(?<!\*)\*(?!\*)", cuerpo))
@@ -306,10 +307,18 @@ def cabecera_comun(titulo, descripcion, canonica, imagen_url, imagen_alt, tipo_o
     )
 
 
+def cf_analytics_snippet():
+    tok = str(CONFIG.get("cloudflare_analytics_token", "")).strip()
+    if tok:
+        return f'<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon=\'{{"token":"{esc(tok)}"}}\'></script>'
+    return "<!-- Cloudflare Web Analytics: pega tu token en tools/sitio.json (cloudflare_analytics_token) -->"
+
+
 PIE = ('<footer class="foot">TERRA BEATS · Naturaleza, sonido y presencia · '
        '<a href="/universo/">Universo TERRA</a> · <a href="/faq.html">FAQ</a> · '
        '<a href="/transparencia.html">Transparencia</a></footer>'
-       '<script src="/terra-embed.js" defer></script></body></html>\n')
+       '<script src="/terra-embed.js" defer></script>'
+       + cf_analytics_snippet() + '</body></html>\n')
 
 
 def momento(d):
@@ -377,6 +386,20 @@ def pagina_articulo(art, articulos):
         f'<span style="font-size:.8rem;color:#9cc2cf">{r["minutos"]} min de lectura</span></div></a>'
         for r in rel
     )
+    yt_html = ""
+    if art.get("youtube_id"):
+        yt_id = esc(art["youtube_id"])
+        yt_html = (
+            '<section class="yt-box" aria-label="Escucha este paisaje en YouTube">'
+            '<div class="yt-head"><strong>Escucha este paisaje en YouTube (@terra-beats)</strong>'
+            '<a class="yt-sub" href="https://www.youtube.com/channel/UCzatnJKJq3KuVGhTSa4xmCQ?sub_confirmation=1" '
+            'target="_blank" rel="noopener noreferrer">Suscribirse en YouTube ↗</a></div>'
+            f'<div class="yt-frame"><iframe src="https://www.youtube-nocookie.com/embed/{yt_id}" '
+            'title="TERRA BEATS en YouTube" loading="lazy" '
+            'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" '
+            'allowfullscreen></iframe></div></section>'
+        )
+
     enlaces = art["sigue_explorando"] or [("Todas las guías", "/universo/")]
     enlaces_html = "".join(f'<a href="{esc(u)}">{esc(t)}</a>' for t, u in enlaces)
     progreso_js = (
@@ -396,7 +419,7 @@ def pagina_articulo(art, articulos):
         f'<p class="notice">Revisado el <time datetime="{revisado}">{fecha_larga(art["revisado"])}</time> · {art["minutos"]} min de lectura</p></div>'
         f'<figure><img src="{esc(art["imagen"])}" alt="{esc(art["imagen_alt"])}">'
         f'<figcaption>{en_linea(art["pie_imagen"])}</figcaption></figure>'
-        f"{toc_html}{art['cuerpo_html']}"
+        f"{toc_html}{art['cuerpo_html']}{yt_html}"
         f'<div class="links"><strong>Sigue explorando</strong><div class="related-grid">{rel_cards}</div>'
         f'<div style="margin-top:14px">{enlaces_html}</div></div>'
         "</article></main>" + progreso_js + PIE

@@ -6,6 +6,9 @@ descripcion: Resumen de 1 o 2 frases (máximo 160 caracteres). Es el texto de la
 categoria: Plantas aromáticas
 entradilla: Frase de entrada bajo el título.
 fecha: 2026-11-21
+# Opcionales:
+# destacado: si
+# youtube_id: ID_DEL_VIDEO_DE_YOUTUBE
 imagen: nombre-imagen.jpg
 imagen_alt: Descripción de la imagen para quien no la ve
 pie_imagen: Recreación visual con IA del proyecto TERRA BEATS; imagen ambiental, no documental.
