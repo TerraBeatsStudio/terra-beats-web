@@ -1,0 +1,24 @@
+{
+  "url_base": "https://terrabeatsstudio.com",
+  "nombre_sitio": "TERRA BEATS Studio",
+  "nombre_seccion": "Universo TERRA",
+  "idioma": "es",
+  "locale_og": "es_ES",
+  "logo": "/assets/brand/terra_beats_studio_oscuro_trazados.svg",
+  "perfiles": [
+    "https://www.youtube.com/channel/UCzatnJKJq3KuVGhTSa4xmCQ",
+    "https://www.instagram.com/terrabeats.studio/"
+  ],
+  "indice": {
+    "titulo_seo": "Naturaleza y calma | Universo TERRA",
+    "descripcion": "Explora guías de plantas, huerto urbano y meditación para principiantes.",
+    "etiqueta": "Naturaleza · conocimiento · calma",
+    "titulo": "Universo TERRA",
+    "entradilla": "Un lugar para descubrir las plantas, cultivar un pequeño rincón verde y encontrar tiempo para una pausa. Historias, guías y experiencias para explorar a tu ritmo.",
+    "aviso": "Una biblioteca en crecimiento, con fuentes para seguir aprendiendo.",
+    "aviso_final": "Las imágenes de paisaje son recreaciones visuales con IA del proyecto y no identifican las plantas descritas.",
+    "imagen": "romero-ia.jpg",
+    "imagen_alt": "Recreación de una planta de romero en maceta bajo el sol mediterráneo"
+  },
+  "paginas_fijas": ["/", "/faq.html", "/polinizadores.html"]
+}
