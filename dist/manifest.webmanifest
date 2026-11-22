@@ -1,0 +1,16 @@
+{
+  "name": "TERRA BEATS Studio",
+  "short_name": "TERRA BEATS",
+  "description": "Naturaleza, música ambiental y herramientas gratuitas para respirar, crear paisajes sonoros y concentrarte.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07131f",
+  "theme_color": "#07131f",
+  "icons": [
+    {
+      "src": "assets/brand/terra_beats_studio_oscuro_trazados.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
