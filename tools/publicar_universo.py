@@ -294,7 +294,7 @@ def cabecera_comun(titulo, descripcion, canonica, imagen_url, imagen_alt, tipo_o
         f'<meta name="twitter:image" content="{imagen_url}">'
         f'<meta name="twitter:image:alt" content="{esc(imagen_alt)}">'
         f"{ld}"
-        '<link rel="stylesheet" href="editorial.css"></head><body>'
+        '<link rel="stylesheet" href="editorial.css?v=20261122-2"></head><body>'
         '<header class="top"><a href="/" aria-label="Volver al inicio de TERRA BEATS">'
         f'<img src="{CONFIG["logo"]}" alt="TERRA BEATS Studio"></a>'
         '<nav aria-label="Navegación"><a href="/">Inicio</a><a href="/universo/">Universo TERRA</a></nav></header>'

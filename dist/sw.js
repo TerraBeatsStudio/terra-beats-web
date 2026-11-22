@@ -1,4 +1,4 @@
-const CACHE_NAME = 'terra-beats-v1';
+const CACHE_NAME = 'terra-beats-v2';
 const ASSETS = [
   '/',
   '/index.html',
