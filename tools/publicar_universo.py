@@ -216,8 +216,44 @@ def markdown_a_html(texto, archivo):
                     raise ErrorContenido(f"{archivo}: dentro de «:::galeria» solo van imágenes ![alt](archivo \"pie\").")
                 figs = "".join(figura(l) for l in dentro)
                 partes.append(f'<div class="gallery" tabindex="0" aria-label="Galería desplazable de {len(dentro)} imágenes">{figs}</div>')
+            elif tipo == "especie":
+                campos_esp = [p.strip() for p in titulo.split("|")]
+                if len(campos_esp) < 4:
+                    raise ErrorContenido(f"{archivo}: «:::especie» usa «Nombre | Científico | vu/nt/lc | Etiqueta UICN».")
+                nom, cien, cod, etiq = campos_esp[0], campos_esp[1], campos_esp[2].lower(), campos_esp[3]
+                cls = cod if cod in ("vu", "nt", "lc") else "lc"
+                datos_esp = {}
+                for l in dentro:
+                    if ":" in l:
+                        k, v = l.split(":", 1)
+                        datos_esp[k.strip().lower()] = v.strip()
+                hab = en_linea(datos_esp.get("hábitat", datos_esp.get("habitat", "")))
+                bio = en_linea(datos_esp.get("dato biológico", datos_esp.get("dato biologico", "")))
+                firma = en_linea(datos_esp.get("firma acústica", datos_esp.get("firma acustica", "")))
+                hz = esc(datos_esp.get("frecuencias", "Variable"))
+                wave_svg = (
+                    '<svg width="20" height="16" viewBox="0 0 20 16" aria-hidden="true">'
+                    '<rect x="1" y="5" width="2.5" height="6" rx="1.2" fill="#F5A623"/>'
+                    '<rect x="5.5" y="2" width="2.5" height="12" rx="1.2" fill="#00C6FF"/>'
+                    '<rect x="10" y="4" width="2.5" height="8" rx="1.2" fill="#F5A623"/>'
+                    '<rect x="14.5" y="1" width="2.5" height="14" rx="1.2" fill="#00C6FF"/>'
+                    '</svg>'
+                )
+                partes.append(
+                    f'<section class="species-card" aria-label="{esc(nom)}">'
+                    f'<div class="species-head"><h3 class="species-title">{esc(nom)} <em>({esc(cien)})</em></h3>'
+                    f'<span class="uicn-badge uicn-{cls}">{esc(etiq)}</span></div>'
+                    f'<div class="species-meta">'
+                    f'<div><strong>Hábitat ibérico:</strong> {hab}</div>'
+                    f'<div><strong>Dato biológico:</strong> {bio}</div>'
+                    f'</div>'
+                    f'<div class="acoustic-module"><div class="acoustic-top">'
+                    f'<span class="acoustic-label">{wave_svg}Firma acústica</span>'
+                    f'<span class="acoustic-hz">{hz}</span></div>'
+                    f'<p class="acoustic-desc">{firma}</p></div></section>'
+                )
             else:
-                raise ErrorContenido(f"{archivo}: bloque desconocido «:::{tipo}» (usa consejo o galeria).")
+                raise ErrorContenido(f"{archivo}: bloque desconocido «:::{tipo}» (usa consejo, galeria o especie).")
             i = fin + 1
             continue
         if quitada.startswith("### "):

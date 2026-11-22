@@ -57,3 +57,21 @@
 .yt-sub:hover{background:#F5A623;color:#07131F}
 .yt-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#040c14}
 .yt-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+/* Vitrina Guardianes de Iberia: fichas de especie y firma acústica */
+.species-card{margin:22px 0;padding:22px 24px;border-radius:18px;border:1px solid rgba(0,198,255,.32);border-top:2px solid rgba(245,166,35,.65);background:#07131F;box-shadow:0 14px 36px rgba(0,0,0,.38)}
+.species-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
+.species-title{margin:0;font-size:1.35rem;color:#f2f8f7}
+.species-title em{color:#9cc2cf;font-size:1rem;font-weight:400;margin-left:6px}
+.uicn-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;font:700 11.5px/1.2 Montserrat,system-ui,sans-serif;letter-spacing:.04em}
+.uicn-badge::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.uicn-vu{color:#F5A623;background:rgba(245,166,35,.14);border:1px solid rgba(245,166,35,.5)}
+.uicn-nt{color:#ffd166;background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.42)}
+.uicn-lc{color:#00C6FF;background:rgba(0,198,255,.12);border:1px solid rgba(0,198,255,.4)}
+.species-meta{display:grid;gap:8px;margin:0 0 14px;font-size:.94rem;color:#d4e0d9}
+.species-meta strong{color:#e7c78c}
+.acoustic-module{padding:14px 16px;border-radius:12px;border:1px solid rgba(0,198,255,.24);background:rgba(11,27,43,.78);display:flex;flex-direction:column;gap:8px}
+.acoustic-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.acoustic-label{display:inline-flex;align-items:center;gap:8px;font:700 12px/1.2 Montserrat,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:#00C6FF}
+.acoustic-hz{font:700 12px/1.2 Montserrat,system-ui,sans-serif;color:#F5A623;padding:3px 9px;border-radius:999px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.32)}
+.acoustic-desc{margin:0;font-size:.9rem;color:#c7d7dc;line-height:1.55}
