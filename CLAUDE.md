@@ -44,3 +44,11 @@ Todo en español. Objetivo: gastar pocos tokens, así que lee solo lo que la tar
   si no, la CI falla.
 - Las imágenes de paisaje son recreaciones con IA y así se indican en la web: no lo cambies.
 - `dist/terra/config.js` va vacío: nunca metas claves.
+
+## Cómo gastar menos tokens
+- Modelo: para textos, guías y cambios de contenido usa el modelo más barato (Haiku). Para CSS/JS y
+  cambios de estructura, Sonnet. Opus solo si la tarea es de diseño o arquitectura.
+- Empieza cada tarea con `/clear` si la anterior no tiene nada que ver.
+- `dist/index.html`, `tools.js` y los `.css` están en pocas líneas muy largas: no los leas enteros.
+  Busca con `grep -o 'selector[^}]*}'` o `grep -n` y lee solo ese fragmento.
+- Para una guía nueva o editada, basta con leer `contenido/universo/_plantilla.md` y el `.md` concreto.
