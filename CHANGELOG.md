@@ -4,6 +4,7 @@
 - Contenido editorial y SEO/GEO: ampliadas `polinizadores.html`, `meditacion-principiantes.md`, `huerto-urbano.md` y `romero.md`; añadidas `sonidos-lluvia-naturaleza-dormir.md`, `guardianes-de-iberia.md` y `transparencia.html`; esquema `FAQPage`, `alt` descriptivos y `<lastmod>` en `sitemap.xml`.
 - Universo TERRA y UX interactiva: filtros dinámicos por temática (`?categoria=...`), buscador instantáneo en `/universo/`, guía destacada, tiempo de lectura, barra de progreso, índice rápido (`Contenido de esta guía`), tarjetas relacionadas, escaparate de 3 guías en portada y Modo «Pausa Inmersiva» en `#explorar`.
 - Conexión YouTube y analítica RGPD: soporte opcional `youtube_id` (`youtube-nocookie.com`) en `tools/publicar_universo.py`, hueco para `cloudflare_analytics_token` en `tools/sitio.json` y apartado de analítica anónima sin cookies en `transparencia.html`.
+- Vitrina «Guardianes de Iberia» (`contenido/universo/guardianes-de-iberia.md`): bloques estructurados `:::especie` con estado UICN por colores, hábitat, dato biológico y módulo visual de firma acústica (Hz).
 
 # Publicación en GitHub Pages con terrabeatsstudio.com — 2026-11-21
 
