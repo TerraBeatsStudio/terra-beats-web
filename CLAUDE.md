@@ -6,7 +6,7 @@ Todo en español. Objetivo: gastar pocos tokens, así que lee solo lo que la tar
 
 ## Estructura
 - `dist/` — la web publicada.
-  - `index.html` portada (herramientas, experiencias), `faq.html`, `polinizadores.html`.
+  - `index.html` portada (herramientas, experiencias), `faq.html`, `polinizadores.html`, `transparencia.html`, `404.html`.
   - `terra/` — reproductor TERRA (`index.html`, `app.js`, `style.css`); se incrusta con `terra-embed.js`.
   - `universo/` — guías. **Los `.html`, `index.html` y `feed.xml` son generados**: no editarlos a mano.
   - `assets/` — imágenes, fuentes y logos (binarios).
@@ -26,7 +26,6 @@ Todo en español. Objetivo: gastar pocos tokens, así que lee solo lo que la tar
 2. **Marca**: hojas externas cargadas después, que sobrescriben la base.
    - `brand.css` (tema oscuro, `:root` de marca, fuentes Montserrat). Se enlaza con `?v=AAAAMMDD-N`:
      sube ese número al cambiarlo para romper la caché.
-   - Complementos de la portada: `tools.css`, `experiencias.css`, `motion.css`.
    - Universo usa solo `universo/editorial.css`; TERRA usa `terra/style.css`.
 - Los cambios de aspecto global van en `brand.css`, no en los `<style>` en línea.
 - El CSS está minificado en pocas líneas muy largas: busca con `grep -o` y un selector concreto
@@ -49,6 +48,6 @@ Todo en español. Objetivo: gastar pocos tokens, así que lee solo lo que la tar
 - Modelo: para textos, guías y cambios de contenido usa el modelo más barato (Haiku). Para CSS/JS y
   cambios de estructura, Sonnet. Opus solo si la tarea es de diseño o arquitectura.
 - Empieza cada tarea con `/clear` si la anterior no tiene nada que ver.
-- `dist/index.html`, `tools.js` y los `.css` están en pocas líneas muy largas: no los leas enteros.
+- `dist/index.html`, `tools.js` y `brand.css` están en pocas líneas muy largas: no los leas enteros.
   Busca con `grep -o 'selector[^}]*}'` o `grep -n` y lee solo ese fragmento.
 - Para una guía nueva o editada, basta con leer `contenido/universo/_plantilla.md` y el `.md` concreto.

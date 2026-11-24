@@ -334,7 +334,7 @@ def cabecera_comun(titulo, descripcion, canonica, imagen_url, imagen_alt, tipo_o
         f'<link rel="canonical" href="{canonica}">'
         f'<link rel="alternate" type="application/rss+xml" title="{esc(CONFIG["nombre_seccion"])}" href="{BASE}/universo/feed.xml">'
         '<meta name="theme-color" content="#07131f">'
-        f'<link rel="icon" type="image/png" href="{CONFIG["logo"]}">'
+        '<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/png" sizes="192x192" href="/assets/brand/icon-192.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">'
         '<meta name="robots" content="index,follow,max-image-preview:large">'
         f'<meta property="og:type" content="{tipo_og}">'
         f'<meta property="og:locale" content="{CONFIG["locale_og"]}">'
